@@ -1,0 +1,6 @@
+@ApiCachingApp_HostAddress = http://localhost:5208
+
+GET {{ApiCachingApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
