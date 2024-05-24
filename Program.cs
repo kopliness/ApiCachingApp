@@ -1,4 +1,5 @@
 using ApiCachingApp.Data;
+using ApiCachingApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ApiDbContext>(options =
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
