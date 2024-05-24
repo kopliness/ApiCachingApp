@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApiCachingApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ed519d31d893caa36a0cb840bef966bf839e470")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+622c861c561826c3f02d4a3a4026679c4b32ae99")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApiCachingApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApiCachingApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

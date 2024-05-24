@@ -9,7 +9,7 @@ namespace ApiCachingApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class DriversController: ControllerBase
+public class DriversController : ControllerBase
 {
     private readonly ICacheService _cacheService;
     private readonly ApiDbContext _context;
@@ -19,29 +19,29 @@ public class DriversController: ControllerBase
         _cacheService = cacheService;
         _context = context;
     }
-    
+
     [HttpGet("GetDrivers")]
     public async Task<IActionResult> GetDrivers()
     {
-        var cacheDrivers = _cacheService.GetData<IEnumerable<Driver>>("drivers");
-        if (cacheDrivers !=null && cacheDrivers.Count() > 0) 
+        var cacheDrivers = await _cacheService.GetData<IEnumerable<Driver>>("drivers");
+        if (cacheDrivers != null && cacheDrivers.Any())
             return Ok(cacheDrivers);
 
         var drivers = await _context.Drivers.ToListAsync();
-
-        _cacheService.SetData("drivers", drivers, DateTimeOffset.Now.AddMinutes(2));
+        await _cacheService.SetData("drivers", drivers, DateTimeOffset.Now.AddMinutes(2));
         return Ok(drivers);
     }
+
     [HttpPost("AddDriver")]
-    [AllowAnonymous]
     public async Task<IActionResult> AddDriver(Driver driver)
     {
         if (driver == null)
             return BadRequest();
+
         await _context.Drivers.AddAsync(driver);
         await _context.SaveChangesAsync();
-        
-        _cacheService.RemoveData("drivers");
+        await _cacheService.RemoveData("drivers");
+
         return Ok(driver);
     }
 }

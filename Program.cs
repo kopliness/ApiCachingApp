@@ -11,6 +11,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ICacheService, CacheService>();
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "redis:6379";
+    options.InstanceName = "ApiCachingApp_";
+});
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
 scope.ServiceProvider.GetRequiredService<ApiDbContext>().Database.Migrate();

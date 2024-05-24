@@ -1,58 +1,40 @@
-using System.Runtime.Caching;
-
-namespace ApiCachingApp.Services;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
+using ApiCachingApp.Services;
 
 public class CacheService : ICacheService
 {
-    private ObjectCache _memoryCache = MemoryCache.Default;
+    private IDistributedCache _cache;
 
-    public T GetData<T>(string key)
+    public CacheService(IDistributedCache cache)
     {
-        try
-        {
-            T item = (T)_memoryCache.Get(key);
-            return item;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        _cache = cache;
     }
 
-    public bool SetData<T>(string key, T value, DateTimeOffset expirationTime)
+    public async Task<T> GetData<T>(string key)
     {
-        var res = true;
-        try
-        {
-            if(!string.IsNullOrEmpty(key))
-                _memoryCache.Set(key, value, expirationTime);
-            else res = false;
-            return res;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            res = false;
-            throw;
-        }
+        var jsonData = await _cache.GetStringAsync(key);
+
+        if (jsonData is null)
+            return default;
+
+        return JsonSerializer.Deserialize<T>(jsonData);
     }
 
-    public object RemoveData(string key)
+    public async Task SetData<T>(string key, T value, DateTimeOffset expirationTime)
     {
-        var res = true;
-        try
+        var options = new DistributedCacheEntryOptions
         {
-            if(!string.IsNullOrEmpty(key))
-                _memoryCache.Remove(key);
-            else res = false;
-            return res;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            res = false;
-            throw;
-        }
+            AbsoluteExpiration = expirationTime
+        };
+
+        var jsonData = JsonSerializer.Serialize(value);
+
+        await _cache.SetStringAsync(key, jsonData, options);
+    }
+
+    public async Task RemoveData(string key)
+    {
+        await _cache.RemoveAsync(key);
     }
 }
